@@ -28,8 +28,8 @@ watchDirs = [("/home/USERNAME/Media/Series/The Graham Norton Show", 5),
              ("/home/USERNAME/Media/Series/The Tonight Show Starring Jimmy Fallon", 3),
              ("/home/USERNAME/Media/Series/Last Week Tonight With Jon Oliver", 5),
              ]
-#threshold = 100000000 #bytes. Will only look for files above this size (in bytes)
-threshold = 0
+threshold = 100000000 #bytes. Will only look for files above this size (in bytes)
+#threshold = 0
 
 
 # Function: log
