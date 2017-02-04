@@ -23,7 +23,7 @@ watchDirs = [("/home/USERNAME/Media/Series/TheTVShowDirName", 5),
 
 The above setting will watch the directory of the show "TheTVShowDirName" and remove the oldest modified file if it discovers there are more than 5 files above a specified threshold in bytes.(default threshold is 100000000 bytes)
 
-Safemode- when True(default) will move old files to the Safedir folder, when false it will delete old files permanently
-Safedir - an absolute path to a directory to move "old" files to (used when Safemode is True)
-threshold - only consider files above this number (in bytes) as episodes. 100000000 is the default
+Safemode- when True(default) will move old files to the Safedir folder, when false it will delete old files permanently  
+Safedir - an absolute path to a directory to move "old" files to (used when Safemode is True)  
+threshold - only consider files above this number (in bytes) as episodes. 100000000 is the default  
 log file - by defualt can be found in the dailyWatch directory.
