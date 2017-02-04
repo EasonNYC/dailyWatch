@@ -38,6 +38,7 @@ threshold = 100000000 #bytes. Will only look for files above this size (in bytes
 # Prints to the same dir by default if path to logfile is omitted.
 def log(msg, logfile=os.path.dirname(os.path.realpath(__file__)) + '/log.txt'):
     curtime = datetime.datetime.now()
+    print('[' +str(curtime)+'] ' + msg+'\n')
     with open(logfile, 'a+') as logfile:
         logfile.writelines('[' +str(curtime)+'] ' + msg+'\n')
         logfile.close()
@@ -76,27 +77,27 @@ def removeOldEp(d, maxEpisodes):
                     # print(str(curpath) + " " + str(size))
                     # os.remove(curpath)
 
-    print("Processing: " + d)
-    print("Number of episodes found: " + str(num_episodes_found) + " (max:" + str(maxEpisodes) + ")")
+    log("Processing: " + d)
+    log("Number of episodes found: " + str(num_episodes_found) + " (max:" + str(maxEpisodes) + ")")
     # remove the oldest episode(s) of the current show recursively, or finish processing current show and continue.
     if (num_episodes_found > maxEpisodes):
         if SAFEMODE:
-            print("removing " + str(path_to_oldest_file) + " " + str(oldest_modified))
+            log("removing " + str(path_to_oldest_file) + " " + str(oldest_modified))
             shutil.move(path_to_oldest_file, safeDir) #move but don't delete
         else:
-            print("deleting " + str(path_to_oldest_file) + " " + str(oldest_modified))
+            log("deleting " + str(path_to_oldest_file) + " " + str(oldest_modified))
             # os.remove(path_to_oldest)
 
         #recursively process each show, exit when show is below max num of episodes to keep
         removeOldEp(d, maxEpisodes)
 
     else:
-        print("ok")
-        print("Finished Processing: " + d)
+        log("ok")
+        log("Finished Processing: " + d)
 
 
 ######main
-log("dailyWatch starting...")
+log("DailyWatch starting...")
 for dirs, limit in watchDirs:
     removeOldEp(dirs, limit)
-log("dailyWatch done. \n")
+log("DailyWatch done. \n")
