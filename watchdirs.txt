@@ -1,0 +1,18 @@
+#watchdirs.txt
+#
+#This file is to be edited by the user and holds the list of directories to watch and the 
+#maximum number of recent items (tv episodes) to keep.
+#The script will recursively search for the N most recent files in all subdirectories in 
+#the the listed location(s), such as season folders.
+#
+# FILE FORMAT:
+# [ABSOLUTE DIRECTORY LOCATION](COMMA)(SPACE)[# OF EPISODES TO KEEP]<return>
+#
+#EXAMPLE: To keep the five most recent videos located in the Graham Norton Directory...
+#/home/username/Media/Series/The Graham Norton Show, 5
+#/home/username/Media/Series/The Today Show, 4
+#/home/username/Media/Series/Late Night with Jimmy Fallon, 4
+###############################################################################
+
+#USER WATCH DIRECTORIES LIST:
+

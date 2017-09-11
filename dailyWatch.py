@@ -18,30 +18,81 @@
 import os
 import datetime
 import shutil
+import argparse
+
 
 ###OPTIONS
 SAFEMODE = True # change safemode to False to enable auto-deletion of episodes (default = True)
-safeDir = "/home/USERNAME/deleteme" # directory to move files to if safemode is True
+safeDir = "/home/epiczero/deleteme" # directory to move files to if safemode is True
+threshold = 100000000 #bytes.  Will only process files above this size
+logfile = os.path.dirname(os.path.realpath(__file__)) + '/log.txt'
+watchDirs = []
+watchfile = "watchdirs.txt"
 
-# Each tv show's absolute path/dir to watch, plus max number of episodes to retain.
-watchDirs = [("/home/USERNAME/Media/Series/The Graham Norton Show", 5),
-             ("/home/USERNAME/Media/Series/The Tonight Show Starring Jimmy Fallon", 3),
-             ("/home/USERNAME/Media/Series/Last Week Tonight With Jon Oliver", 5),
-             ]
-threshold = 100000000 #bytes. Will only look for files above this size (in bytes)
-#threshold = 0
+
+#PARSE ARGUMENTS
+    
+parser = argparse.ArgumentParser(description='dailyWatch will watch your TV show directories and keep only the latest episodes.')
+parser.add_argument("-d", action="store", help='filename of watch file. Must use full path and be properly formatted (see example watchfile.)')
+parser.add_argument("-l", action="store", help='file to store log info')
+parser.add_argument("-t", action="store", type=int, help='ignore all files below NUM bytes. Default=100000000')
+parser.add_argument("-s", action="store", help='True = script will move your files to the designated directory instead of deleting them. is always TRUE for now. Default=True [FUTURE IMPLIMENTATION].')
+args = parser.parse_args()
+    
+#log incoming arguments
+argstr = "args:"
+for a in str(args):
+    argstr+= a
+
+#handle arguments
+if args.d != None:
+    watchfile = args.d
+if args.l != None:
+    logfile = args.l
+if args.s != None:
+    pass #TODO
+if args.t != None:
+    if args.t < 1:
+        print(" ERROR command line argument (-t threshold in [bytes]) can not be less than 1. Exiting....")
+        exit()
+    threshold = args.t
+    #todo add --dryrun  print result only
+    #todo add -m specify safemode folder
+    #todo add -v turn on verbose output    
 
 
 # Function: log
 # Arguments: (string) message, (optional) path to log.txt
 # Description: logger function prints to a standard text file as well also prints to the console.
 # Prints to the same dir by default if path to logfile is omitted.
-def log(msg, logfile=os.path.dirname(os.path.realpath(__file__)) + '/log.txt'):
+def log(msg, logfile=logfile):
     curtime = datetime.datetime.now()
     print('[' +str(curtime)+'] ' + msg+'\n')
     with open(logfile, 'a+') as logfile:
         logfile.writelines('[' +str(curtime)+'] ' + msg+'\n')
         logfile.close()
+
+
+# Function: loadWatchDirs
+# Arguments: (string) path+filename of watchfile
+# Description: opens a the file of directories to watch and parses its contents.
+def loadWatchdirs(watchfile):
+    try:
+        fileobj = open(watchfile, "r")
+        for line in fileobj:
+            if line[0] == '#' or line[0] == '\n':
+                continue
+
+            #prepare
+            line = line.rstrip()
+            tmp = [x for x in line.split(', ')] 
+            tmp[1] = int(tmp[1])
+
+            #append
+            watchDirs.append((tmp[0],tmp[1]))
+    except IOError as e:
+        log(str(e.errno) + str(e))
+        log(e)
 
 
 # Function: removeOldEp
@@ -52,11 +103,12 @@ def removeOldEp(d, maxEpisodes):
     # init oldest file
     oldest_modified = datetime.datetime.now()
     path_to_oldest_file = ""
+    oldest_filename = ""
     num_episodes_found = 0
 
     for dirpath, dirnames, filenames in os.walk(d):
-        # print(dirpath)
         for file in filenames:
+
             # save the current path
             curpath = os.path.join(dirpath, file)
 
@@ -71,6 +123,7 @@ def removeOldEp(d, maxEpisodes):
                 if (time_last_modified < oldest_modified):
                     oldest_modified = time_last_modified
                     path_to_oldest_file = curpath
+                    oldest_filename = file
 
                     # old stuff based on time
                     # if (datetime.datetime.now() - time_last_modified) > datetime.timedelta(days=14) and size > 100000000:
@@ -79,16 +132,18 @@ def removeOldEp(d, maxEpisodes):
 
     log("Processing: " + d)
     log("Number of episodes found: " + str(num_episodes_found) + " (max:" + str(maxEpisodes) + ")")
+    
     # remove the oldest episode(s) of the current show recursively, or finish processing current show and continue.
     if (num_episodes_found > maxEpisodes):
         if SAFEMODE:
+            #todo: --dryrun here
             log("removing " + str(path_to_oldest_file) + " " + str(oldest_modified))
-            shutil.move(path_to_oldest_file, safeDir) #move but don't delete
+            shutil.move(path_to_oldest_file, os.path.join(safeDir,oldest_filename)) #move but don't delete
         else:
             log("deleting " + str(path_to_oldest_file) + " " + str(oldest_modified))
             # os.remove(path_to_oldest)
 
-        #recursively process each show, exit when show is below max num of episodes to keep
+        #recursively process show directory, exit when show is below max num of episodes to keep
         removeOldEp(d, maxEpisodes)
 
     else:
@@ -96,8 +151,16 @@ def removeOldEp(d, maxEpisodes):
         log("Finished Processing: " + d)
 
 
-######main
+# MAIN #########
 log("DailyWatch starting...")
+
+log("handling arguments")
+
+
+log("Loading watchfile " + watchfile + "...")
+loadWatchdirs(watchfile)
+
+log("processing directories...")
 for dirs, limit in watchDirs:
     removeOldEp(dirs, limit)
-log("DailyWatch done. \n")
+log("DailyWatch done. \n\n")
