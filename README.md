@@ -1,27 +1,25 @@
 # DailyWatch
-**DailyWatch** is a Python script to watch your TV show folders and remove older episodes as new ones come in, much like a DVR would.
+**DailyWatch** is a Python script which watches your Plex TV show folders and removes old episodes as new ones come in, just like a DVR.
 
-DailyWatch manages regularly downloaded TV Show folders (or podcasts etc.) by automaticly removing
-old episodes for certain shows just like a DVR "season pass" might. The maximum number of episodes to keep on hand
-at anytime for each show is configurable in the script settings, and DailyWatch is meant to be run scheduled in a crontab
-according to the user's preference (ex. weekly, daily, hourly etc). DailyWatch is perfect for a HTPC or media server
-because it allows the user to receive a large amount of "fresh" content on a nightly basis while quietly removing "stale"
-content before it can fill up a hard drive.
+DailyWatch manages TV show folders (or folders which contain podcasts etc.) by automaticly removing
+old episodes for certain shows like a DVR "season pass". The user specifies the folders and maximum number of episodes to keep on hand
+in an easy to configure txt file, and DailyWatch script can be scheduled in a chrontab to check for "stale" episodes however often you'd like. DailyWatch is perfect for a HTPC or media server because it allows the user to receive a large amount of "fresh" content on a daily basis while quietly removing older "stale" content before it can fill up a hard drive.
 
-How it works: DailyWatch will search each directory specified in the watchDirs list. If it notices there are more shows
-than the max specified, it will remove the "oldest modified file" in that directory and recursively
-run until the directory and any sub directory contains an amount of eposodes equal to the max set for that show. It will
-continue to run untill it has processed each directory listed.
+How it works: DailyWatch will (recursively) search each directory specified in the watchdirs.txt file. If it notices there are more shows
+than the listed entry in the watchdirs.txt file specified, it will remove the "oldest modified file" in that directory and recursively
+run until the directory and any sub directory contains an amount of eposodes equal to the number in the watchdirs.txt file specified for that show/podcast. Thge script will continue to run untill it has processed each directory listed in the watchdirs.txt folder.
 
 **Configuration Options:**
 
-WatchDirs - list of directories to watch. Requires the full path of each show's main folder, along with the max number of episodes to keep, in parethesis and seperated by a comma. Searches
-all subdirectories in this path as well (if their are folders inside for each season, for instance).
+For a full list of CLI options:
 
-Ex:
-watchDirs = [("/home/USERNAME/Media/Series/TheTVShowDirName", 5),
+    python dailyWatch.py -h
 
-The above setting will watch the directory of the show "TheTVShowDirName" and remove the oldest modified file if it discovers there are more than 5 files above a specified threshold in bytes.(default threshold is 100000000 bytes)
+watchdirs.txt - A file with the list of directories to watch. Requires the full path of each show's main folder, along with the max number of episodes to keep, on the same line seperated by a comma. Example:
+
+    /home/USERNAME/Media/Series/TheTVShowDirName, 5
+
+The above setting will watch the directory of the show "TheTVShowDirName" and remove the oldest modified file if it discovers there are more than 5 files above a specified threshold in bytes. Note: If there are Season folders inside, it will process all seasons. (default threshold is 100000000 bytes)
 
 Safemode- when True(default) will move old files to the Safedir folder, when false it will delete old files permanently  
 Safedir - an absolute path to a directory to move "old" files to (used when Safemode is True)  

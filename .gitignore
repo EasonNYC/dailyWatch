@@ -1,3 +1,14 @@
+
+#dev related
+os
+shutil
+datetime
+log.txt
+mywatchdirs.txt
+testdirs.txt
+test.py
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
