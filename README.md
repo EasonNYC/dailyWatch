@@ -19,13 +19,15 @@ For a full list of CLI options:
 
     /home/USERNAME/Media/Series/TheTVShowDirName, 5
 
-The above line specifies a folder to watch for the show "TheTVShowDirName" and a number of episodes to always keep on hand (5). DailyWatch will remove the oldest modified file if it discovers there are more than 5 files which are above a specified threshold in bytes. Note: If there are Season folders inside this folder, it will process all seasons (default threshold is 100000000 bytes, but this can be configured with the -t option).
+The above line specifies a folder to watch for the show "TheTVShowDirName" and a number of episodes to always keep on hand (5). DailyWatch will remove the oldest modified file if it discovers there are more than 5 files which are above a specified threshold in bytes. The default threshold is 100000000 bytes, but this can be configured with the -t option.
 
-Once your watchdirs.txt is configured correctly, edit your crontab to run dailyWatch on a periodic basis:
+Note that if there are Season folders inside this watch folder, it will process all season folders. (recursive) 
+
+Once your watchdirs.txt is configured correctly, edit your crontab to run dailyWatch.py on a periodic basis:
 
     sudo crontab -e
 
-Next add this line to the end of the file (the below line tells crontab to run at 4:00 AM every day.
+Next add this line to the end of the crontab file (the example below tells crontab to run at 4:00 AM every day.)
 
     0 4 * * * /usr/bin/python /home/USERNAME/dailyWatch/dailyWatch.py 
 
