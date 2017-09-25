@@ -1,27 +1,41 @@
 # DailyWatch
 **DailyWatch** is a Python script which watches your Plex TV show folders and removes old episodes as new ones come in, just like a DVR.
 
+Programmed by: Eason Smith (Eason@EasonRobotics.com)
+
+DailyWatch is written for linux with support for Python 2.6/3.5 
+
+- [Intro](#intro)
+- [CLI Options](#options)
+- [How to Configure](#configuration)
+
+<a name='intro'></a>
 DailyWatch manages TV show folders (or folders which contain podcasts etc.) by automaticly removing
-old episodes for certain shows like a DVR "season pass". The user specifies the folders and maximum number of episodes to keep on hand
-in an easy to configure txt file, and DailyWatch script can be scheduled in a chrontab to check for "stale" episodes however often you'd like. DailyWatch is perfect for a HTPC or media server because it allows the user to receive a large amount of "fresh" content on a daily basis while quietly removing older "stale" content before it can fill up a hard drive.
+old episodes for certain shows like a DVR "season pass". The user specifies the folders and maximum number of episodes to keep on hand in an easy to configure txt file, and DailyWatch script can be scheduled in a chrontab to check for "stale" episodes however often you'd like. DailyWatch is perfect for a HTPC or media server because it allows the user to receive a large amount of "fresh" content on a daily basis while quietly removing older "stale" content before it can fill up a hard drive.
 
-How it works: DailyWatch will (recursively) search each directory specified in the watchdirs.txt file. If it notices there are more shows
-than the listed entry in the watchdirs.txt file specified, it will remove the "oldest modified file" in that directory and recursively
-run until the directory and any sub directory contains an amount of eposodes equal to the number in the watchdirs.txt file specified for that show/podcast. Thge script will continue to run untill it has processed each directory listed in the watchdirs.txt folder.
+<a name='options'></a>
+Options
+========  
 
-**Configuration Options:**
+For a list of CLI options:
 
-For a full list of CLI options:
+    python dailyWatch.py -h  
 
-    python dailyWatch.py -h
 
-**watchdirs.txt** - A file with the list of directories to watch. Requires the full path of each show's main folder, along with the max number of episodes to keep, on the same line seperated by a comma. Example:
+
+<a name='configuration'></a>
+How to Configure:
+================
+
+Clone this repo into your home directory and open watchdirs.txt using your favorite text editor: 
+
+    nano watchdirs.txt
+
+This file should be edited to contain a list of directories to watch with the number of episodes to keep on each line, seperated by a comma. Example:
 
     /home/USERNAME/Media/Series/TheTVShowDirName, 5
 
-The above line specifies a folder to watch for the show "TheTVShowDirName" and a number of episodes to always keep on hand (5). DailyWatch will remove the oldest modified file if it discovers there are more than 5 files which are above a specified threshold in bytes. The default threshold is 100000000 bytes, but this can be configured with the -t option.
-
-Note that if there are Season folders inside this watch folder, it will process all season folders. (recursive) 
+DailyWatch will recursively remove the oldest modified file found in this directory (above a specified threshold in bytes) untill it has exactly five files. It then moves on to the next entry to process. Note that if you have folder/s within the folder you listed in your watchdirs.txt file, dailywatch will process all of those folders as well.
 
 Once your watchdirs.txt is configured correctly, edit your crontab to run dailyWatch.py on a periodic basis:
 
@@ -31,9 +45,4 @@ Next add this line to the end of the crontab file (the example below tells cront
 
     0 4 * * * /usr/bin/python /home/USERNAME/dailyWatch/dailyWatch.py 
 
-Other options:
-
-Safemode- when True(default) will move old files to the Safedir folder, when false it will delete old files permanently  
-Safedir - an absolute path to a directory to move "old" files to (used when Safemode is True)  
-threshold - only consider files above this number (in bytes) as episodes. 100000000 is the default  
-log file - by defualt can be found in the dailyWatch directory.
+DailyWatch outputs to a log file, which may be helpful to the user when debugging the script. (log.txt)
